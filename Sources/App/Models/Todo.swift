@@ -11,7 +11,7 @@ final class Todo: SQLiteModel {
     var completed: Bool?
     var order: Int?
 
-    init(id: Int?, title: String?, completed: Bool?, order: Int?) {
+    init(id: Int? = nil, title: String?, completed: Bool, order: Int?) {
         self.id = id
         self.title = title
         self.completed = completed
