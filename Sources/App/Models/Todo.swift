@@ -19,57 +19,6 @@ final class Todo: SQLiteModel {
     }
 }
 
-struct IncomingTodo: Content {
-    var title: String?
-    var completed: Bool?
-    var order: Int?
-
-    func makeTodo() -> Todo {
-        return Todo(title: title, completed: completed ?? false, order: order)
-    }
-}
-
-extension Todo {
-    func patch(with incoming: IncomingTodo) {
-        title = incoming.title ?? title
-        completed = incoming.completed ?? completed
-        order = incoming.order ?? order
-    }
-}
-
-struct ReturnTodo: Content {
-    var id: Int?
-    var title: String?
-    var completed: Bool?
-    var order: Int?
-    var url: String
-}
-
-extension Todo {
-    func makeResponse(with req: Request) throws -> ReturnTodo {
-        let idString = id?.description ?? ""
-        let url = req.baseUrl + idString
-        return ReturnTodo(
-            id: id,
-            title: title,
-            completed: completed,
-            order: order,
-            url: url
-        )
-    }
-}
-
-extension Request {
-    var baseUrl: String {
-        var host = http.headers["Host"].first!
-        if host.hasSuffix("/") {
-            host = String(host.dropLast())
-        }
-        let scheme = http.url.scheme ?? "http"
-        return "\(scheme)://\(host)/todos/"
-    }
-}
-
 /// Allows `Todo` to be used as a dynamic migration.
 extension Todo: Migration { }
 
@@ -78,3 +27,13 @@ extension Todo: Content { }
 
 /// Allows `Todo` to be used as a dynamic parameter in route definitions.
 extension Todo: Parameter { }
+
+/// Patch
+
+extension Todo {
+    func patch(with incoming: Incoming) {
+        title = incoming.title ?? title
+        completed = incoming.completed ?? completed
+        order = incoming.order ?? order
+    }
+}
