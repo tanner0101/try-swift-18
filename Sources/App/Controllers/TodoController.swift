@@ -8,6 +8,10 @@ final class TodoController {
         return Todo.query(on: req).all().map { try $0.map { try $0.makeResponse(with: req)} }
     }
 
+    func view(_ req: Request) throws -> Future<ReturnTodo> {
+        return try req.parameters.next(Todo.self).map { try $0.makeResponse(with: req) }
+    }
+
     /// Saves a decoded `Todo` to the database.
     func create(_ req: Request) throws -> Future<ReturnTodo> {
         struct CreateTodo: Content {
