@@ -19,6 +19,24 @@ final class Todo: SQLiteModel {
     }
 }
 
+struct IncomingTodo: Content {
+    var title: String?
+    var completed: Bool?
+    var order: Int?
+
+    func makeTodo() -> Todo {
+        return Todo(title: title, completed: completed ?? false, order: order)
+    }
+}
+
+extension Todo {
+    func patch(with incoming: IncomingTodo) {
+        title = incoming.title ?? title
+        completed = incoming.completed ?? completed
+        order = incoming.order ?? order
+    }
+}
+
 struct ReturnTodo: Content {
     var id: Int?
     var title: String?

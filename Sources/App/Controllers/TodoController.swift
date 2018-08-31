@@ -1,5 +1,13 @@
 import Vapor
 
+extension Future where T == Todo {
+    func makeOutgoing(with req: Request) -> Future<ReturnTodo> {
+        return map { todo in
+            return try todo.makeResponse(with: req)
+        }
+    }
+}
+
 /// Controls basic CRUD operations on `Todo`s.
 final class TodoController {
 
@@ -12,23 +20,19 @@ final class TodoController {
         return try req.parameters.next(Todo.self).map { try $0.makeResponse(with: req) }
     }
 
+    func update(_ req: Request) throws -> Future<ReturnTodo> {
+        let todo = try req.parameters.next(Todo.self)
+        let incoming = try req.content.decode(IncomingTodo.self)
+        return flatMap(to: ReturnTodo.self, todo, incoming) { todo, incoming in
+            todo.patch(with: incoming)
+            return todo.save(on: req).makeOutgoing(with: req)
+        }
+    }
+
     /// Saves a decoded `Todo` to the database.
     func create(_ req: Request) throws -> Future<ReturnTodo> {
-        struct CreateTodo: Content {
-            var title: String?
-            var completed: Bool?
-            var order: Int?
-
-            func makeTodo() -> Todo {
-                return Todo(title: title, completed: completed ?? false, order: order)
-            }
-        }
-
-
-        return try req.content.decode(CreateTodo.self).flatMap { todo in
-            return todo.makeTodo().save(on: req).map { todo in
-                return try todo.makeResponse(with: req)
-            }
+        return try req.content.decode(IncomingTodo.self).flatMap { todo in
+            return todo.makeTodo().save(on: req).makeOutgoing(with: req)
         }
     }
 
