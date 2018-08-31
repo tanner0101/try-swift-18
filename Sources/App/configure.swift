@@ -13,9 +13,10 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
 
     /// Register middleware
     var middlewares = MiddlewareConfig() // Create _empty_ middleware config
+    
     middlewares.use(CORSMiddleware(configuration: .init(
         allowedOrigin: .all,
-        allowedMethods: [.GET, .POST, .OPTIONS],
+        allowedMethods: [.GET, .POST, .DELETE, .OPTIONS],
         allowedHeaders: [.xRequestedWith, .origin, .contentType, .accept]
     )))
     
