@@ -14,24 +14,28 @@ final class TodoController {
 
     /// Returns a specific todo
     func view(_ req: Request) throws -> Future<Todo.Outgoing> {
-        return try req.parameters.next(Todo.self).makeOutgoing(with: req)
+        return try req.parameters.next(Todo.self)
+            .makeOutgoing(with: req)
     }
 
     /// Updates a TODO
     func update(_ req: Request) throws -> Future<Todo.Outgoing> {
         let todo = try req.parameters.next(Todo.self)
         let incoming = try req.content.decode(Todo.Incoming.self)
-        return flatMap(to: Todo.Outgoing.self, todo, incoming) { todo, incoming in
-            todo.patch(with: incoming)
-            return todo.save(on: req).makeOutgoing(with: req)
-        }
+        return flatMap(to: Todo.self, todo, incoming) { todo, incoming in
+            return todo.patched(with: incoming)
+                .update(on: req)
+        }.makeOutgoing(with: req)
     }
 
     /// Saves a decoded `Todo` to the database.
     func create(_ req: Request) throws -> Future<Todo.Outgoing> {
         return try req.content.decode(Todo.Incoming.self).flatMap { todo in
-            return todo.makeTodo().save(on: req).makeOutgoing(with: req)
-        }
+            return todo.makeTodo()
+                .save(on: req)
+        }.map {
+            print($0); return $0
+        }.makeOutgoing(with: req)
     }
 
     /// Deletes a parameterized `Todo`.

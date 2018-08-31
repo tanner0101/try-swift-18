@@ -2,7 +2,7 @@ import FluentSQLite
 import Vapor
 
 /// A single entry of a Todo list.
-final class Todo: SQLiteModel {
+struct Todo: SQLiteModel {
     /// The unique identifier for this `Todo`.
     var id: Int?
 
@@ -10,13 +10,6 @@ final class Todo: SQLiteModel {
     var title: String
     var completed: Bool
     var order: Int?
-
-    init(id: Int? = nil, title: String, completed: Bool, order: Int?) {
-        self.id = id
-        self.title = title
-        self.completed = completed
-        self.order = order
-    }
 }
 
 /// Allows `Todo` to be used as a dynamic migration.
@@ -31,9 +24,11 @@ extension Todo: Parameter { }
 /// Patch
 
 extension Todo {
-    func patch(with incoming: Incoming) {
-        title = incoming.title ?? title
-        completed = incoming.completed ?? completed
-        order = incoming.order ?? order
+    func patched(with incoming: Incoming) -> Todo {
+        var copy = self
+        copy.title = incoming.title ?? title
+        copy.completed = incoming.completed ?? completed
+        copy.order = incoming.order ?? order
+        return copy
     }
 }

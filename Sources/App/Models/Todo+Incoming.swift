@@ -9,6 +9,7 @@ extension Todo {
 
         func makeTodo() -> Todo {
             return Todo(
+                id: nil,
                 title: title ?? "",
                 completed: completed ?? false,
                 order: order
