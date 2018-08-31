@@ -8,7 +8,11 @@ extension Todo {
         var order: Int?
 
         func makeTodo() -> Todo {
-            return Todo(title: title, completed: completed ?? false, order: order)
+            return Todo(
+                title: title ?? "",
+                completed: completed ?? false,
+                order: order
+            )
         }
     }
 }

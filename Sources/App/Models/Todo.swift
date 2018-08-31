@@ -7,11 +7,11 @@ final class Todo: SQLiteModel {
     var id: Int?
 
     /// A title describing what this `Todo` entails.
-    var title: String?
-    var completed: Bool?
+    var title: String
+    var completed: Bool
     var order: Int?
 
-    init(id: Int? = nil, title: String?, completed: Bool, order: Int?) {
+    init(id: Int? = nil, title: String, completed: Bool, order: Int?) {
         self.id = id
         self.title = title
         self.completed = completed
