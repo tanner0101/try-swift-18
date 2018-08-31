@@ -21,7 +21,7 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     var middlewares = MiddlewareConfig() // Create _empty_ middleware config
     middlewares.use(CORSMiddleware(configuration: .init(
         allowedOrigin: .all,
-        allowedMethods: [.GET, .POST, .DELETE, .OPTIONS],
+        allowedMethods: [.GET, .POST, .DELETE, .OPTIONS, .PATCH],
         allowedHeaders: [.xRequestedWith, .origin, .contentType, .accept]
     )))
     /// middlewares.use(FileMiddleware.self) // Serves files from `Public/` directory

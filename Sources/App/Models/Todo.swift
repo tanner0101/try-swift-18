@@ -7,11 +7,11 @@ final class Todo: SQLiteModel {
     var id: Int?
 
     /// A title describing what this `Todo` entails.
-    var title: String?
-    var completed: Bool?
+    var title: String
+    var completed: Bool
     var order: Int?
 
-    init(id: Int?, title: String?, completed: Bool?, order: Int?) {
+    init(id: Int? = nil, title: String, completed: Bool, order: Int?) {
         self.id = id
         self.title = title
         self.completed = completed
@@ -27,3 +27,13 @@ extension Todo: Content { }
 
 /// Allows `Todo` to be used as a dynamic parameter in route definitions.
 extension Todo: Parameter { }
+
+/// Patch
+
+extension Todo {
+    func patch(with incoming: Incoming) {
+        title = incoming.title ?? title
+        completed = incoming.completed ?? completed
+        order = incoming.order ?? order
+    }
+}
