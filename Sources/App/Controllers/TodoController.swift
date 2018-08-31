@@ -2,13 +2,14 @@ import Vapor
 
 /// Controls basic CRUD operations on `Todo`s.
 final class TodoController {
+
     /// Returns a list of all `Todo`s.
-    func index(_ req: Request) throws -> Future<[Todo]> {
-        return Todo.query(on: req).all()
+    func index(_ req: Request) throws -> Future<[ReturnTodo]> {
+        return Todo.query(on: req).all().map { try $0.map { try $0.makeResponse(with: req)} }
     }
 
     /// Saves a decoded `Todo` to the database.
-    func create(_ req: Request) throws -> Future<Todo> {
+    func create(_ req: Request) throws -> Future<ReturnTodo> {
         struct CreateTodo: Content {
             var title: String?
             var completed: Bool?
@@ -19,8 +20,11 @@ final class TodoController {
             }
         }
 
+
         return try req.content.decode(CreateTodo.self).flatMap { todo in
-            return todo.makeTodo().save(on: req)
+            return todo.makeTodo().save(on: req).map { todo in
+                return try todo.makeResponse(with: req)
+            }
         }
     }
 

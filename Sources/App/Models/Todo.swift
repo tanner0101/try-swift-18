@@ -19,6 +19,39 @@ final class Todo: SQLiteModel {
     }
 }
 
+struct ReturnTodo: Content {
+    var id: Int?
+    var title: String?
+    var completed: Bool?
+    var order: Int?
+    var url: String
+}
+
+extension Todo {
+    func makeResponse(with req: Request) throws -> ReturnTodo {
+        let idString = id?.description ?? ""
+        let url = req.baseUrl + idString
+        return ReturnTodo(
+            id: id,
+            title: title,
+            completed: completed,
+            order: order,
+            url: url
+        )
+    }
+}
+
+extension Request {
+    var baseUrl: String {
+        var host = http.headers["Host"].first!
+        if !host.hasSuffix("/") {
+            host.append("/")
+        }
+        let scheme = http.url.scheme ?? "http"
+        return "\(scheme)://\(host)"
+    }
+}
+
 /// Allows `Todo` to be used as a dynamic migration.
 extension Todo: Migration { }
 
